@@ -59,6 +59,12 @@ object DownloadUtil {
 
     private const val TAG = "DownloadUtil"
 
+    private fun YoutubeDLRequest.enableJsRuntime(): YoutubeDLRequest {
+        val qjs = java.io.File(context.applicationInfo.nativeLibraryDir, "libqjs.so")
+        if (qjs.exists()) addOption("--js-runtimes", "quickjs:${qjs.absolutePath}")
+        return this
+    }
+
     const val BASENAME = "%(title).200B"
 
     const val EXTENSION = ".%(ext)s"
@@ -92,6 +98,7 @@ object DownloadUtil {
             ToastUtil.makeToastSuspend(context.getString(R.string.fetching_playlist_info))
             val request = YoutubeDLRequest(playlistURL)
             with(request) {
+                enableJsRuntime()
                 //            addOption("--compat-options", "no-youtube-unavailable-videos")
                 addOption("--flat-playlist")
                 addOption("--dump-single-json")
@@ -146,6 +153,7 @@ object DownloadUtil {
         with(preferences) {
             val request =
                 YoutubeDLRequest(url).apply {
+                    enableJsRuntime()
                     addOption("-o", BASENAME)
                     if (restrictFilenames) {
                         addOption("--restrict-filenames")
@@ -683,6 +691,7 @@ object DownloadUtil {
 
             request
                 .apply {
+                    enableJsRuntime()
                     addOption("--no-mtime")
                     //                addOption("-v")
                     if (cookies) {
@@ -885,6 +894,7 @@ object DownloadUtil {
         val request =
             with(preferences) {
                 YoutubeDLRequest(urlList).apply {
+                    enableJsRuntime()
                     commandDirectory.takeIf { it.isNotEmpty() }?.let { addOption("-P", it) }
                     addOption("--newline")
                     if (aria2c) {
@@ -926,6 +936,7 @@ object DownloadUtil {
             ToastUtil.makeToastSuspend(context.getString(R.string.start_execute))
             val request =
                 YoutubeDLRequest(urlList).apply {
+                    enableJsRuntime()
                     commandDirectory.takeIf { it.isNotEmpty() }?.let { addOption("-P", it) }
                     addOption("--newline")
                     if (aria2c) {
