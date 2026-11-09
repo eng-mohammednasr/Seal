@@ -26,10 +26,14 @@ jobs:
             -DANDROID_ABI=arm64-v8a \
             -DANDROID_PLATFORM=android-24 \
             -DCMAKE_BUILD_TYPE=Release
-          cmake --build "$RUNNER_TEMP/quickjs-build" --target qjs -j"$(nproc)"
+          cmake --build "$RUNNER_TEMP/quickjs-build" -j"$(nproc)"
+          QJS_BIN="$(find "$RUNNER_TEMP/quickjs-build" -maxdepth 2 -type f -name qjs ! -name '*.a' | head -n1)"
+          echo "Found qjs executable: $QJS_BIN"
+          test -n "$QJS_BIN"
           mkdir -p app/src/main/jniLibs/arm64-v8a
-          cp "$RUNNER_TEMP/quickjs-build/qjs" app/src/main/jniLibs/arm64-v8a/libqjs.so
+          cp "$QJS_BIN" app/src/main/jniLibs/arm64-v8a/libqjs.so
           "$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip" app/src/main/jniLibs/arm64-v8a/libqjs.so || true
+          file app/src/main/jniLibs/arm64-v8a/libqjs.so
           ls -l app/src/main/jniLibs/arm64-v8a/
 
       - name: Build debug APK
