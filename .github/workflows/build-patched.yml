@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          java-version: 21
 
       - name: Build quickjs-ng (arm64-v8a)
         run: |
@@ -39,7 +39,7 @@ jobs:
       - name: Build debug APK
         run: |
           chmod +x ./gradlew
-          ./gradlew assembleDebug --stacktrace
+          ./gradlew assembleGenericDebug --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
